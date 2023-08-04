@@ -187,8 +187,8 @@ if ( CLIENT ) then
 	TOOL.ClientConVar[ "direction" ]     = improvedstacker.DIRECTION_UP
 	TOOL.ClientConVar[ "count" ]         = "1"
 	TOOL.ClientConVar[ "freeze" ]        = "1"
-	TOOL.ClientConVar[ "weld" ]          = "1"
-	TOOL.ClientConVar[ "nocollide" ]     = "1"
+	TOOL.ClientConVar[ "shouldweld" ]    = "0"
+	TOOL.ClientConVar[ "shouldnocollide" ]     = "0"
 	TOOL.ClientConVar[ "ghostall" ]      = "1"
 	TOOL.ClientConVar[ "material" ]      = "1"
 	TOOL.ClientConVar[ "physprop" ]      = "1"
@@ -217,7 +217,6 @@ if ( CLIENT ) then
 
 	language.Add( "tool."..mode..".name",         L(prefix.."name") )
 	language.Add( "tool."..mode..".desc",         L(prefix.."desc") )
-	language.Add( "tool."..mode..".0",            L(prefix.."0") )
 	language.Add( "tool."..mode..".left",         L(prefix.."left") )
 	language.Add( "tool."..mode..".shift_left",   L(prefix.."shift_left") )
 	language.Add( "tool."..mode..".right",        L(prefix.."right") )
@@ -514,13 +513,13 @@ function TOOL:ShouldForceFreeze() return cvarFreeze:GetBool() end
 -- 	TOOL:ShouldWeld()
 --	Returns true if the stacked props should be welded together.
 --]]--
-function TOOL:ShouldApplyWeld() return self:GetClientNumber( "weld" ) == 1 end
+function TOOL:ShouldApplyWeld() return self:GetClientNumber( "shouldweld" ) == 1 end
 function TOOL:ShouldForceWeld() return cvarWeld:GetBool() end
 --[[--------------------------------------------------------------------------
 -- 	TOOL:ShouldNoCollide()
 --	Returns true if the stacked props should be nocollided with each other.
 --]]--
-function TOOL:ShouldApplyNoCollide() return self:GetClientNumber( "nocollide" ) == 1 end
+function TOOL:ShouldApplyNoCollide() return self:GetClientNumber( "shouldnocollide" ) == 1 end
 function TOOL:ShouldForceNoCollide() return cvarNoCollide:GetBool() end
 --[[--------------------------------------------------------------------------
 -- 	TOOL:ShouldStackRelative()
@@ -1349,8 +1348,8 @@ if ( CLIENT ) then
 					[mode.."_direction"]   = tostring(improvedstacker.DIRECTION_UP),
 					[mode.."_count"]       = "1",
 					[mode.."_freeze"]      = "1",
-					[mode.."_weld"]        = "1",
-					[mode.."_nocollide"]   = "1",
+					[mode.."_shouldweld"]        = "0",
+					[mode.."_shouldnocollide"]   = "0",
 					[mode.."_ghostall"]    = "1",
 					[mode.."_material"]    = "1",
 					[mode.."_physprop"]    = "1",
@@ -1377,8 +1376,8 @@ if ( CLIENT ) then
 				mode.."_direction",
 				mode.."_count",
 				mode.."_freeze",
-				mode.."_weld",
-				mode.."_nocollide",
+				mode.."_shouldweld",
+				mode.."_shouldnocollide",
 				mode.."_ghostall",
 				mode.."_material",
 				mode.."_physprop",
@@ -1439,8 +1438,8 @@ if ( CLIENT ) then
 		cpanel:AddControl( "Label",    { Text = L(prefix.."label_presets") } )
 		cpanel:AddControl( "ComboBox", presets )
 		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_freeze"),    Command = mode.."_freeze" } )
-		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_weld"),      Command = mode.."_weld" } )
-		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_nocollide"), Command = mode.."_nocollide" } )
+		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_weld"),      Command = mode.."_shouldweld" } )
+		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_nocollide"), Command = mode.."_shouldnocollide" } )
 		cpanel:AddControl( "ComboBox", relative )
 		cpanel:AddControl( "ComboBox", directions )
 		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_count"), Min = 1, Max = cvarMaxPerStack:GetInt(), Command = mode.."_count", Description = "How many props to create in each stack" } )
@@ -1614,8 +1613,8 @@ if ( CLIENT ) then
 
 			local checkboxes = {
 				"freeze",
-				"weld",
-				"nocollide",
+				"shouldweld",
+				"shouldnocollide",
 				"nocollide_all",
 				"stayinworld",
 			}
