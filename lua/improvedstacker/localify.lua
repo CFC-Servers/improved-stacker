@@ -154,7 +154,6 @@ end
 --	Example: local str = localify.Localize( "#Hello",  nil, true ) -- Returns either the locale's binding or the key
 --]]--
 function Localize( key, lang, returnKey )
-    print( key, lang, returnKey )
 	if ( lang and not IsValidLanguage( lang ) ) then error( "Invalid language provided ('"..tostring(lang).."')" ) return end
 
 	local tbl = localizations[ (lang and lang:lower()) or GetLocale() ]
@@ -178,7 +177,7 @@ end
 function AddLanguage( lang, name )
 	if ( IsValidLanguage( lang ) ) then return end
 
-	    languages[ lang:lower() ] = name
+		languages[ lang:lower() ] = name
 	localizations[ lang:lower() ] = {}
 end
 
@@ -195,7 +194,7 @@ end
 function RemoveLanguage( lang )
 	if ( not IsValidLanguage( lang ) ) then return end
 
-	    languages[ lang:lower() ] = nil
+		languages[ lang:lower() ] = nil
 	localizations[ lang:lower() ] = nil
 
 	if ( lang:lower() == FALLBACK ) then FALLBACK = "en" end
@@ -238,8 +237,14 @@ end
 --	The cvar holding this value is "gmod_language".
 --]]--
 function GetLocale( ply )
-	return ( SERVER and ply and ply:GetInfo( "localify_language" ):lower() )
-	    or ( GetConVarString( "localify_language" ) == "" and FALLBACK or GetConVarString( "localify_language" ):lower() )
+	local gmodLang = ""
+	if SERVER and ply then
+		gmodLang = ply:GetInfo( "localify_language" ):lower()
+	else
+		gmodLang = GetConVarString( "localify_language" ):lower()
+	end
+
+	return IsValidLanguage( gmodLang ) and gmodLang or FALLBACK
 end
 
 --[[--------------------------------------------------------------------------
