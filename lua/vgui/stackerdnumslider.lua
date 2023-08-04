@@ -1,26 +1,9 @@
---[[--------------------------------------------------------------------------
--- 	Namespace Tables
---------------------------------------------------------------------------]]--
-
 local PANEL = {}
-
---[[--------------------------------------------------------------------------
--- 	Localized Functions & Variables
---------------------------------------------------------------------------]]--
 
 local math = math
 local vgui = vgui
 local tonumber = tonumber
 
---[[--------------------------------------------------------------------------
---	Namespace Functions
---------------------------------------------------------------------------]]--
-
---[[--------------------------------------------------------------------------
---
---	PANEL:SetValue( string, boolean )
---
---]]--
 function PANEL:SetValue( val, bSuppress )
 	val = math.Clamp( tonumber( val ) or 0, self:GetMin(), self:GetMax() )
 
@@ -31,14 +14,9 @@ function PANEL:SetValue( val, bSuppress )
 	self:ValueChanged( self:GetValue(), bSuppress )
 end
 
---[[--------------------------------------------------------------------------
---
---	PANEL:ValueChanged( string, value)
---
---]]--
 function PANEL:ValueChanged( val, bSuppress )
 	val = math.Clamp( tonumber( val ) or 0, self:GetMin(), self:GetMax() )
-	self.Slider:SetSlideX( self.Scratch:GetFraction( val ) )	
+	self.Slider:SetSlideX( self.Scratch:GetFraction( val ) )
 	if ( self.TextArea ~= vgui.GetKeyboardFocus() ) then
 		self.TextArea:SetValue( self.Scratch:GetTextValue() )
 	end

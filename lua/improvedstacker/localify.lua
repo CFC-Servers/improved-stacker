@@ -1,9 +1,9 @@
 --[[--------------------------------------------------------------------------
 	Localify Module
-	
+
 	Author:
 		Mista-Tea ([IJWTB] Thomas)
-	
+
 	License:
 		The MIT License (MIT)
 
@@ -26,7 +26,7 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-			
+
 	Changelog:
 ----------------------------------------------------------------------------]]
 
@@ -133,7 +133,7 @@ FALLBACK = FALLBACK or "en"
 --]]--
 function Bind( lang, key, value )
 	if ( not IsValidLanguage( lang ) ) then error( "Invalid language provided ('"..tostring(lang).."')" ) return end
-	
+
 	localizations[ lang:lower() ][ key ] = value
 end
 
@@ -154,8 +154,9 @@ end
 --	Example: local str = localify.Localize( "#Hello",  nil, true ) -- Returns either the locale's binding or the key
 --]]--
 function Localize( key, lang, returnKey )
+    print( key, lang, returnKey )
 	if ( lang and not IsValidLanguage( lang ) ) then error( "Invalid language provided ('"..tostring(lang).."')" ) return end
-	
+
 	local tbl = localizations[ (lang and lang:lower()) or GetLocale() ]
 
 	return ( tbl and tbl[ key ] )                                             -- If there is a bind, return it
@@ -176,7 +177,7 @@ end
 --]]--
 function AddLanguage( lang, name )
 	if ( IsValidLanguage( lang ) ) then return end
-	
+
 	    languages[ lang:lower() ] = name
 	localizations[ lang:lower() ] = {}
 end
@@ -193,10 +194,10 @@ end
 --]]--
 function RemoveLanguage( lang )
 	if ( not IsValidLanguage( lang ) ) then return end
-	
+
 	    languages[ lang:lower() ] = nil
 	localizations[ lang:lower() ] = nil
-	
+
 	if ( lang:lower() == FALLBACK ) then FALLBACK = "en" end
 end
 
@@ -223,7 +224,7 @@ end
 --]]--
 function SetFallbackLanguage( lang )
 	if ( not IsValidLanguage( lang ) ) then error( "Invalid language provided ('"..tostring(lang).."')" ) return end
-	
+
 	FALLBACK = lang:lower()
 end
 
@@ -316,7 +317,7 @@ if ( CLIENT ) then
 	-- Check for changes to the gmod_language cvar and replicate them to localify_language
 	cvars.AddChangeCallback( "gmod_language", function( name, old, new )
 		if ( not IsValidLanguage( new ) ) then return end
-		
+
 		RunConsoleCommand( "localify_language", new )
 	end, "localify" )
 

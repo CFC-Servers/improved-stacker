@@ -1,9 +1,9 @@
 --[[--------------------------------------------------------------------------
 	Improved Stacker Module
-	
+
 	Author:
 		Mista-Tea ([IJWTB] Thomas)
-	
+
 	License:
 		The MIT License (MIT)
 
@@ -26,7 +26,7 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-			
+
 	Changelog:
 ----------------------------------------------------------------------------]]
 
@@ -94,18 +94,18 @@ MAGIC_OFFSET = -0.5
 --------------------------------------------------------------------------]]--
 
 if ( SERVER ) then
-	
+
 	-- the tables below are used internally and should only generally be interfaced with
 	-- via the functions declared afterward.
 	-- basically treat them as private, since they are only public for auto-refresh compatibility
-	
+
 	-- holds the current stacked entity count for every player
 	m_EntCount  = m_EntCount  or {}
 	-- holds the last stacker usage for every player
 	m_StackTime = m_StackTime or {}
 	-- holds every stacker entity created
 	m_Ents      = m_Ents      or {}
-		
+
 	--[[--------------------------------------------------------------------------
 	-- 	GetEntCount( player, number )
 	--]]--
@@ -130,7 +130,7 @@ if ( SERVER ) then
 	function DecrementEntCount( ply, num )
 		m_EntCount[ ply:SteamID() ] = ( m_EntCount[ ply:SteamID() ] and m_EntCount[ ply:SteamID() ] - (num or 1) ) or 0
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	-- 	SetLastStackTime( player, number )
 	--]]--
@@ -143,7 +143,7 @@ if ( SERVER ) then
 	function GetLastStackTime( ply, default )
 		return m_StackTime[ ply:SteamID() ] or default
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	--	Initialize( string )
 	--
@@ -153,10 +153,10 @@ if ( SERVER ) then
 	--]]--
 	function Initialize( mode )
 		mode = mode or "stacker_improved"
-		
+
 		--[[--------------------------------------------------------------------------
 		--  Hook :: PlayerInitialSpawn
-		
+
 		--	Sets the newly connected player's total stacker ents to 0.
 		--	See TOOL:IsExceedingMax() for more details
 		--]]--
@@ -171,18 +171,18 @@ if ( SERVER ) then
 		hook.Add( "PlayerDisconnected", mode.."_remove_ent_count", function( ply )
 			m_EntCount[ ply:SteamID() ] = nil
 		end )
-		
+
 		--[[--------------------------------------------------------------------------
 		-- 	MarkEntity( player, entity, table )
 		--
-		--	Marks the entity as a stacker entity. This allows the entity to be 
+		--	Marks the entity as a stacker entity. This allows the entity to be
 		--	collision-checked in GM.ShouldCollide.
 		--]]--
 		function MarkEntity( ply, ent, data )
 			m_Ents[ ent ] = true
 			duplicator.StoreEntityModifier( ent, mode, { StackerEnt = true } )
 			ent:SetCustomCollisionCheck( true )
-			
+
 			-- when the entity is removed, sanitize our internal m_Ents array
 			ent:CallOnRemove( mode, function( ent )
 				ClearEntity( ent )
@@ -198,7 +198,7 @@ if ( SERVER ) then
 		function ClearEntity( ent )
 			if ( m_Ents[ ent ] ) then m_Ents[ ent ] = nil end
 		end
-		
+
 		--[[--------------------------------------------------------------------------
 		-- 	CanUnfreeze( player, entity, physObject )
 		--]]--
@@ -209,7 +209,7 @@ if ( SERVER ) then
 		--hook.Add( "PhysgunPickup",     mode, CanUnfreeze )
 		--hook.Remove( "CanPlayerUnfreeze", mode )
 		--hook.Remove( "PhysgunPickup",     mode )
-		
+
 		local cvarNoCollideAll
 		local cvarNoCollide
 		--[[--------------------------------------------------------------------------
@@ -218,7 +218,7 @@ if ( SERVER ) then
 		function ShouldCollide( a, b )
 			if ( not cvarNoCollideAll ) then cvarNoCollideAll = GetConVar( mode.."_force_nocollide_all" ) end
 			if ( not cvarNoCollide )    then cvarNoCollide    = GetConVar( mode.."_force_nocollide" )     end
-			
+
 			if ( cvarNoCollideAll:GetBool() ) then
 				if ( m_Ents[ a ] ) then
 					if not ( b:IsPlayer() or b:IsWorld() or b:IsNPC() or b:IsVehicle() ) then return false end
@@ -232,17 +232,17 @@ if ( SERVER ) then
 		--hook.Add( "ShouldCollide", mode, ShouldCollide )
 		--hook.Remove( "ShouldCollide", mode )
 	end
-	
+
 elseif ( CLIENT ) then
-	
+
 	-- the table below is used internally and should only generally be interfaced with
 	-- via the functions declared afterward.
 	-- basically treat it as private, since it is only public for auto-refresh compatibility
-	
+
 	m_Ghosts    = m_Ghosts    or {}
 	m_LookingAt = m_LookingAt or nil
 	m_LookedAt  = m_LookedAt  or nil
-	
+
 	--[[--------------------------------------------------------------------------
 	-- 	GetGhosts()
 	--]]--
@@ -255,7 +255,7 @@ elseif ( CLIENT ) then
 	function SetGhosts( tbl )
 		m_Ghosts = tbl
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	-- 	GetLookingAt()
 	--]]--
@@ -268,7 +268,7 @@ elseif ( CLIENT ) then
 	function SetLookingAt( ent )
 		m_LookingAt = ent
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	-- 	GetLookedAt()
 	--]]--
@@ -281,23 +281,23 @@ elseif ( CLIENT ) then
 	function SetLookedAt( ent )
 		m_LookedAt = ent
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	-- 	ReleaseGhosts()
-	--	
-	--	Attempts to remove all ghosted props in the stack. 
+	--
+	--	Attempts to remove all ghosted props in the stack.
 	--	This occurs when the player stops looking at a prop with the stacker tool equipped.
 	--]]--
 	function ReleaseGhosts()
 		if ( #m_Ghosts == 0 ) then return end
-		
+
 		for i = 1, #m_Ghosts do
 			if ( not IsValid( m_Ghosts[ i ] ) ) then continue end
 			SafeRemoveEntityDelayed( m_Ghosts[ i ], 0 )
 			m_Ghosts[ i ] = nil
 		end
 	end
-	
+
 	--[[--------------------------------------------------------------------------
 	--	Initialize( string )
 	--
@@ -307,7 +307,7 @@ elseif ( CLIENT ) then
 	--]]--
 	function Initialize( mode )
 		mode = mode or "stacker_improved"
-		
+
 		SETTINGS_DEFAULT = {
 			[mode.."_set_max_per_player"]    = "-1",
 			[mode.."_set_max_per_stack"]     = "15",
@@ -320,7 +320,7 @@ elseif ( CLIENT ) then
 			[mode.."_set_force_nocollide"]   = "0",
 			[mode.."_set_force_stayinworld"] = "1",
 		}
-		
+
 		SETTINGS_SANDBOX = {
 			[mode.."_set_max_per_player"]    = "-1",
 			[mode.."_set_max_per_stack"]     = "30",
@@ -333,7 +333,7 @@ elseif ( CLIENT ) then
 			[mode.."_set_force_nocollide"]   = "0",
 			[mode.."_set_force_stayinworld"] = "0",
 		}
-		
+
 		SETTINGS_DARKRP = {
 			[mode.."_set_max_per_player"]    = "50",
 			[mode.."_set_max_per_stack"]     = "5",
@@ -346,7 +346,7 @@ elseif ( CLIENT ) then
 			[mode.."_set_force_nocollide"]   = "1",
 			[mode.."_set_force_stayinworld"] = "1",
 		}
-		
+
 		SETTINGS_SINGLEPLAYER = {
 			[mode.."_set_max_per_player"]    = "-1",
 			[mode.."_set_max_per_stack"]     = "100",
@@ -360,7 +360,7 @@ elseif ( CLIENT ) then
 			[mode.."_set_force_stayinworld"] = "0",
 		}
 	end
-	
+
 end
 
 --
@@ -378,7 +378,7 @@ DirectionFunctions = {
 		[DIRECTION_UP]    = function() return VECTOR_UP    end,
 		[DIRECTION_DOWN]  = function() return VECTOR_DOWN  end,
 	},
-	
+
 	[MODE_PROP]  = {
 		[DIRECTION_FRONT] = function( angle ) return  angle:Forward() end,
 		[DIRECTION_BACK]  = function( angle ) return -angle:Forward() end,
