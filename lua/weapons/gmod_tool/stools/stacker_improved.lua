@@ -256,7 +256,7 @@ local oldWeld        = GetConVar( "stacker_force_weld" )      and GetConVar( "st
 local oldNoCollide   = GetConVar( "stacker_force_nocollide" ) and GetConVar( "stacker_force_nocollide" ):GetInt() or 0
 local oldDelay       = GetConVar( "stacker_delay" )           and GetConVar( "stacker_delay" ):GetFloat()         or 0.25
 ]]
-local cvarFlags, cvarFlagsNotify
+local cvarFlags, cvarFlagsNotif
 
 if ( SERVER ) then
 	cvarFlags      = bit.bor( FCVAR_REPLICATED, FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE )
