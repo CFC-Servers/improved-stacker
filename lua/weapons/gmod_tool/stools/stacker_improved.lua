@@ -733,7 +733,7 @@ function TOOL:LeftClick( tr, isRightClick )
 
 		self:ApplyMaterial( newEnt, entMat )
 		self:ApplyColor( newEnt, colorData )
-		self:ApplyFreeze( ply, newEnt )
+		self:ApplyFreeze( newEnt, ent )
 
 		-- attempt to nocollide the new entity with the last, or break out of the loop if CBaseEntityList::AddNonNetworkableEntity fails
 		if ( not self:ApplyNoCollide( lastEnt, newEnt ) ) then
@@ -858,11 +858,12 @@ end
 --
 --	Attempts to freeze the stacked props in place.
 --]]--
-function TOOL:ApplyFreeze( ply, ent )
+function TOOL:ApplyFreeze( newEnt, ent )
 	if ( self:ShouldForceFreeze() or self:ShouldApplyFreeze() ) then
+		newEnt:GetPhysicsObject():EnableMotion( false )
 		ent:GetPhysicsObject():EnableMotion( false )
 	else
-		ent:GetPhysicsObject():Wake()
+		newEnt:GetPhysicsObject():Wake()
 	end
 end
 
