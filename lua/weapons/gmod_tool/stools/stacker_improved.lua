@@ -708,6 +708,9 @@ function TOOL:LeftClick( tr, isRightClick )
 		newEnt:SetPos( entPos )
 		newEnt:SetAngles( entAng )
 		newEnt:SetSkin( entSkin )
+
+		hook.Run( "StackerEntityPreSpawn", newEnt, ply )
+
 		newEnt:Spawn()
 
 		-- this hook is for external prop protections and anti-spam addons.
