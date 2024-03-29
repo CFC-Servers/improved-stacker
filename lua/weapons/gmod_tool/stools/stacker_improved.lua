@@ -709,7 +709,7 @@ function TOOL:LeftClick( tr, isRightClick )
 		newEnt:SetAngles( entAng )
 		newEnt:SetSkin( entSkin )
 
-		hook.Run( "StackerEntityPreSpawn", newEnt, ply )
+		hook.Run( "StackerEntityPreSpawn", newEnt, ply, entMod, entPos, entAng, entSkin )
 
 		newEnt:Spawn()
 
