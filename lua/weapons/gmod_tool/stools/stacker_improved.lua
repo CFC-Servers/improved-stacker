@@ -646,13 +646,16 @@ function TOOL:LeftClick( tr, isRightClick )
 
 	-- store the properties of the original prop so we can apply them to the stacked props
 	local ent = tr.Entity
+	local phys = ent:GetPhysicsObject()
+	if not IsValid( phys ) then return false end
+
 	local entPos   = ent:GetPos()
 	local entAng   = ent:GetAngles()
 	local entMod   = ent:GetModel()
 	local entSkin  = ent:GetSkin()
 	local entMat   = ent:GetMaterial()
-	local physMat  = ent:GetPhysicsObject():GetMaterial()
-	local physGrav = ent:GetPhysicsObject():IsGravityEnabled()
+	local physMat  = phys:GetMaterial()
+	local physGrav = phys:IsGravityEnabled()
 
 	-- setup a table to hold the original prop's color data so that we can apply it to the stacked props
 	local colorData = {
