@@ -882,18 +882,17 @@ end
 function TOOL:ApplyWeld( lastEnt, newEnt )
 	if ( not self:ShouldForceWeld() and not self:ShouldApplyWeld() ) then return true end
 
+	local ply = self:GetOwner()
+	if not ply:CheckLimit( "constraints" ) then return false end
+
 	local forceLimit    = 0
 	local isNocollided  = self:ShouldForceNoCollide() or self:ShouldApplyNoCollide()
 	local deleteOnBreak = false
 
-	local ok, err = pcall( constraint.Weld, lastEnt, newEnt, 0, 0, forceLimit, isNocollided, deleteOnBreak )
+	local weld = constraint.Weld( lastEnt, newEnt, 0, 0, forceLimit, isNocollided, deleteOnBreak )
+	ply:AddCount( "constraints", weld )
 
-	if ( not ok ) then
-		print( mode .. ": " .. L(prefix.."error_max_constraints") .." (error: " .. err .. ")" )
-		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints", localify.GetLocale( self:GetOwner() )) )
-	end
-
-	return ok
+	return true
 end
 
 --[[--------------------------------------------------------------------------
@@ -908,14 +907,13 @@ function TOOL:ApplyNoCollide( lastEnt, newEnt )
 	-- constraint.Weld already has a nocollide parameter
 	if ( self:ShouldForceWeld() or self:ShouldApplyWeld() ) then return true end
 
-	local ok, err = pcall( constraint.NoCollide, lastEnt, newEnt, 0, 0 )
+	local ply = self:GetOwner()
+	if not ply:CheckLimit( "constraints" ) then return false end
 
-	if ( not ok ) then
-		print( mode .. ": " .. L(prefix.."error_max_constraints") .." (error: " .. err .. ")" )
-		self:SendError( mode .. ": " .. L(prefix.."error_max_constraints", localify.GetLocale( self:GetOwner() )) )
-	end
+	local nocol = constraint.NoCollide( lastEnt, newEnt, 0, 0 )
+	ply:AddCount( "constraints", nocol )
 
-	return ok
+	return true
 end
 
 --[[--------------------------------------------------------------------------

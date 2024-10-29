@@ -32,7 +32,6 @@ localify.Bind( "en", prefix.."error_max_per_stack",      "The max props that can
 localify.Bind( "en", prefix.."error_too_quick",          "You are using stacker too quickly" )
 localify.Bind( "en", prefix.."error_max_per_player",     "Stacker prop limit reached" )
 localify.Bind( "en", prefix.."error_not_in_world",       "Stacked props must be spawned within the world" )
-localify.Bind( "en", prefix.."error_max_constraints",    "Failed to create constraint, most likely ran out of entity slots" )
 -- Labels
 localify.Bind( "en", prefix.."label_presets",            "Stacker Presets: " )
 localify.Bind( "en", prefix.."label_relative",           "Stack relative to: " )
@@ -134,7 +133,6 @@ localify.Bind( "bg", prefix.."error_max_per_stack",      "Максималния
 localify.Bind( "bg", prefix.."error_too_quick",          "Използвате натрупвача твърде бързо" )
 localify.Bind( "bg", prefix.."error_max_per_player",     "Ограничението за натрупани предмети е достигнато" )
 localify.Bind( "bg", prefix.."error_not_in_world",       "Натрупваните предмети трябва да се създават вътре в света" )
-localify.Bind( "bg", prefix.."error_max_constraints",    "Не можа да се създаде връзка, най вероятно са свършили слотовете за обекти" )
 -- Labels
 localify.Bind( "bg", prefix.."label_presets",            "Шаблон на натрупвача: " )
 localify.Bind( "bg", prefix.."label_relative",           "Натрупвай спрямо: " )
@@ -236,7 +234,6 @@ localify.Bind( "fr", prefix.."error_max_per_stack",      "Les props maximum qui 
 localify.Bind( "fr", prefix.."error_too_quick",          "Vous utilisez l'empileur trop rapidement" )
 localify.Bind( "fr", prefix.."error_max_per_player",     "Limite de l'empileur atteinte" )
 localify.Bind( "fr", prefix.."error_not_in_world",       "Les props empilés doivent être engendrés dans le monde" )
-localify.Bind( "fr", prefix.."error_max_constraints",    "Échec de la création de la contrainte, très probablement à court d'emplacements d'entité" )
 -- Etiquettes
 localify.Bind( "fr", prefix.."label_presets",            "Préréglages de l'empileur " )
 localify.Bind( "fr", prefix.."label_relative",           "Pile relatif au: " )
@@ -338,7 +335,6 @@ localify.Bind( "pl", prefix.."error_max_per_stack",      "Maksymalna ilość kop
 localify.Bind( "pl", prefix.."error_too_quick",          "Używasz Stackera za szybko" )
 localify.Bind( "pl", prefix.."error_max_per_player",     "Osiągnięto limir obiektów dla Stackera" )
 localify.Bind( "pl", prefix.."error_not_in_world",       "Skopiowane obiekty nie mogą wychodzić poza mapę" )
-localify.Bind( "pl", prefix.."error_max_constraints",    "Nie udało się utworzyć łaczenia, najprawdopodobniej brakuje miejsc na obiekty" )
 -- Labels
 localify.Bind( "pl", prefix.."label_presets",            "Ustawienia zapisane: " )
 localify.Bind( "pl", prefix.."label_relative",           "Kopiowanie względem: " )
@@ -440,7 +436,6 @@ localify.Bind( "ru", prefix.."error_max_per_stack",      "Максимально
 localify.Bind( "ru", prefix.."error_too_quick",          "Вы используете стакер слишком быстро" )
 localify.Bind( "ru", prefix.."error_max_per_player",     "Достигнуто максимальное количество предметов" )
 localify.Bind( "ru", prefix.."error_not_in_world",       "Стаканные предметы должны появляться в мире" )
-localify.Bind( "ru", prefix.."error_max_constraints",    "Не удалось создать соединение, скорее всего, закончились слоты сущностей" )
 -- Labels
 localify.Bind( "ru", prefix.."label_presets",            "Готовые настройки стака: " )
 localify.Bind( "ru", prefix.."label_relative",           "Стак относителен к: " )
@@ -542,7 +537,6 @@ localify.Bind( "zh-cn", prefix.."error_max_per_stack",      "单次叠加物品�
 localify.Bind( "zh-cn", prefix.."error_too_quick",          "你叠加器使用得太快了" )
 localify.Bind( "zh-cn", prefix.."error_max_per_player",     "叠加器达到了物品上限" )
 localify.Bind( "zh-cn", prefix.."error_not_in_world",       "叠加的物品必须生成在地图内部" )
-localify.Bind( "zh-cn", prefix.."error_max_constraints",    "约束生成失败，很可能是达到了实体上限" )
 -- Labels
 localify.Bind( "zh-cn", prefix.."label_presets",            "叠加器预设：" )
 localify.Bind( "zh-cn", prefix.."label_relative",           "叠加相对方向：" )
@@ -644,7 +638,6 @@ localify.Bind( "de", prefix.."error_max_per_stack",      "Die maximale Anzahl vo
 localify.Bind( "de", prefix.."error_too_quick",          "Du verwendest den Stapler zu schnell" )
 localify.Bind( "de", prefix.."error_max_per_player",     "Stapler prop limit erreicht" )
 localify.Bind( "de", prefix.."error_not_in_world",       "Gestapelte Props müssen innerhalb der Welt gespawnt werden" )
-localify.Bind( "de", prefix.."error_max_constraints",    "Constraint konnte nicht erstellt werden ")
 -- Labels
 localify.Bind( "de", prefix.."label_presets",            "Stapler-Voreinstellungen: " )
 localify.Bind( "de", prefix.."label_relative",           "Stapel relativ zu: " )
@@ -747,7 +740,6 @@ localify.Bind( "tr", prefix.."error_max_count",          "Bir kerede yığılabi
 localify.Bind( "tr", prefix.."error_too_quick",          "Yığınlayıcıyı çok hızlı kullanıyorsunuz" )
 localify.Bind( "tr", prefix.."error_max_total",          "Yığınlayıcı destek sınırına ulaşıldı" )
 localify.Bind( "tr", prefix.."error_not_in_world",       "Yığılmış nesneler dünya içinde oluşturulmalıdır" )
-localify.Bind( "tr", prefix.."error_max_constraints",    "Kısıtlama oluşturulamadı, büyük olasılıkla varlık yuvaları tükendi" )
 -- Labels                                              
 localify.Bind( "tr", prefix.."label_presets",            "Yığınlayıcı Ön Ayarları: " )
 localify.Bind( "tr", prefix.."label_relative",           "Göreceli yığın: " )
@@ -848,7 +840,6 @@ localify.Bind( "", prefix.."error_max_count",          "" )
 localify.Bind( "", prefix.."error_too_quick",          "" )
 localify.Bind( "", prefix.."error_max_total",          "" )
 localify.Bind( "", prefix.."error_not_in_world",       "" )
-localify.Bind( "", prefix.."error_max_constraints",    "" )
 -- Labels
 localify.Bind( "", prefix.."label_presets",            "" )
 localify.Bind( "", prefix.."label_relative",           "" )
