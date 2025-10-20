@@ -474,7 +474,7 @@ end
 --	return anything.
 --]]--
 function RotateAngle( stackMode, stackDir, angle, rotation )
-	local axisPitch, axisYaw, axisRoll = RotationFunctions[ stackDir ]( angle )
+	local axisPitch, axisYaw, axisRoll = RotationFunctions[stackDir]( angle )
 
 	angle:RotateAroundAxis( axisPitch,  rotation.p )
 	angle:RotateAroundAxis( axisYaw,   -rotation.y )

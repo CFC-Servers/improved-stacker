@@ -5,7 +5,6 @@ if SERVER then
 	AddCSLuaFile( "vgui/stackerpreseteditor.lua" )
 	-- convenience modules
 	AddCSLuaFile( "improvedstacker/improvedstacker.lua" )
-	AddCSLuaFile( "improvedstacker/localify.lua" )
 else
 	-- needed for custom vgui controls in the menu
 	include( "vgui/stackercontrolpresets.lua" )

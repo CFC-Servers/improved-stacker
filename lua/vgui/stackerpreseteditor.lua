@@ -3,7 +3,6 @@ local PANEL = {}
 local vgui = vgui
 local pairs = pairs
 local AccessorFunc = AccessorFunc
-local GetConVarString = GetConVarString
 
 AccessorFunc( PANEL, "m_ConCommands", "ConCommands" )
 
@@ -16,8 +15,9 @@ function PANEL:Add()
 	-- Todo, Handle name collision
 	local tabValues = {}
 
-	for k, v in pairs( self.m_ConVars ) do
-		tabValues[ v.CCmd ] = GetConVarString( v.CVar )
+	for _, v in pairs( self.m_ConVars ) do
+		local cvar = GetConVar( v.CVar )
+		tabValues[v.CCmd] = cvar:GetString()
 	end
 
 	presets.Add( self.m_strType, ToName, tabValues )
