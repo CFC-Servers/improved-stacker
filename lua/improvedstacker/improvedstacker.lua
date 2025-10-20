@@ -36,7 +36,6 @@ local Angle = Angle
 local Vector = Vector
 local GetConVar = GetConVar
 local duplicator = duplicator
-local CreateConVar = CreateConVar
 
 --[[--------------------------------------------------------------------------
 -- 	Namespace Tables

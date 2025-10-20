@@ -90,12 +90,6 @@ local mode = TOOL.Mode -- defined by the name of this file (default should be st
 -- Modules & Dependencies
 --------------------------------------------------------------------------]]--
 
--- needed for localization support (depends on GMod locale: "gmod_language")
-include( "improvedstacker/localify.lua" )
-localify.LoadSharedFile( "improvedstacker/localization.lua" ) -- loads the file containing localized phrases
-local L = localify.Localize                                   -- used for translating string tokens into localized phrases
-local prefix = "#tool."..mode.."."                            -- prefix used for this tool's localization tokens
-
 -- needed for various stacker functionality
 include( "improvedstacker/improvedstacker.lua" )
 improvedstacker.Initialize( mode )
@@ -128,8 +122,6 @@ local tobool = tobool
 local CurTime = CurTime
 local surface = surface
 local IsValid = IsValid
-local localify = localify
-local language = language
 local tonumber = tonumber
 local GetConVar = GetConVar
 local construct = construct
@@ -162,7 +154,7 @@ local showSettings = false
 --------------------------------------------------------------------------]]--
 
 TOOL.Category = "Construction"
-TOOL.Name     = L(prefix.."name")
+TOOL.Name     = "Stacker - Improved"
 
 TOOL.Information = {
 	"left",
@@ -215,14 +207,14 @@ if ( CLIENT ) then
 	-- Language Settings
 	--------------------------------------------------------------------------]]--
 
-	language.Add( "tool."..mode..".name",         L(prefix.."name") )
-	language.Add( "tool."..mode..".desc",         L(prefix.."desc") )
-	language.Add( "tool."..mode..".left",         L(prefix.."left") )
-	language.Add( "tool."..mode..".shift_left",   L(prefix.."shift_left") )
-	language.Add( "tool."..mode..".right",        L(prefix.."right") )
-	language.Add( "tool."..mode..".shift_right",  L(prefix.."shift_right") )
-	language.Add( "tool."..mode..".reload",       L(prefix.."reload") )
-	language.Add( "Undone_"..mode,                L("Undone_"..mode) )
+	language.Add( "tool."..mode..".name",         "Stacker - Improved" )
+	language.Add( "tool."..mode..".desc",         "Easily stack duplicated props in any direction" )
+	language.Add( "tool."..mode..".left",         "Create a stack" )
+	language.Add( "tool."..mode..".shift_left",   "Increase stack size" )
+	language.Add( "tool."..mode..".right",        "Create a single prop" )
+	language.Add( "tool."..mode..".shift_right",  "Decrease stack size" )
+	language.Add( "tool."..mode..".reload",       "Change stack direction" )
+	language.Add( "Undone_"..mode,                "Undone stacked prop(s)" )
 
 	--[[--------------------------------------------------------------------------
 	-- Net Messages
@@ -328,19 +320,19 @@ elseif ( SERVER ) then
 		if ( IsValid( ply ) and result ~= true ) then
 			-- if the server blocked the change, send the player an error
 			if ( result == false )                     then
-				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_blocked_by_server", localify.GetLocale( ply )) .. (isstring(reason) and ": " .. reason or "") )
+				ply:PrintMessage( HUD_PRINTTALK, "The server has blocked you from changing this console variable" .. (isstring(reason) and ": " .. reason or "") )
 				return false
 			end
 			-- if the server didn't give a response, fallback to a ply:IsAdmin() check
 			if ( result == nil and not ply:IsAdmin() ) then
-				ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_not_admin", localify.GetLocale( ply )) .. ": " .. cmd )
+				ply:PrintMessage( HUD_PRINTTALK, "You must be in the 'admin' usergroup to change this console variable: " .. cmd )
 				return false
 			end
 		end
 
 		-- lastly, ensure the argument is a valid number before returning true
 		if ( not tonumber( arg ) ) then
-			ply:PrintMessage( HUD_PRINTTALK, L(prefix.."error_invalid_argument", localify.GetLocale( ply )) )
+			ply:PrintMessage( HUD_PRINTTALK, "You must enter a valid number value" )
 			return false
 		end
 
@@ -619,7 +611,7 @@ function TOOL:LeftClick( tr, isRightClick )
 
 	-- check if the player's stack size is higher than the server's max allowed size (but only if the server didn't explictly override it)
 	if ( maxCount >= 0 ) then
-		if ( count > maxCount ) then self:SendError( L(prefix.."error_max_per_stack", localify.GetLocale( self:GetOwner() )) .. maxCount ) end
+		if ( count > maxCount ) then self:SendError( "The max props that can be stacked at once is limited to " .. maxCount ) end
 		count = math.Clamp( count, 0, maxCount )
 	end
 
@@ -632,7 +624,7 @@ function TOOL:LeftClick( tr, isRightClick )
 	local delay = hook.Run( "StackerDelay", ply, lastStackTime ) or self:GetDelay()
 
 	-- check if the player is trying to use stacker too quickly
-	if ( lastStackTime + delay > CurTime() ) then self:SendError( L(prefix.."error_too_quick", localify.GetLocale( self:GetOwner() )) ) return false end
+	if ( lastStackTime + delay > CurTime() ) then self:SendError( "You are using stacker too quickly" ) return false end
 	improvedstacker.SetLastStackTime( ply, CurTime() )
 
 	local stackDirection = self:GetDirection()
@@ -683,7 +675,7 @@ function TOOL:LeftClick( tr, isRightClick )
 
 		-- check if the player has too many active stacker props spawned out already
 		local stackerEntsSpawned = self:GetNumberPlayerEnts()
-		if ( maxPerPlayer >= 0 and stackerEntsSpawned >= maxPerPlayer ) then self:SendError( ("%s (%s)"):format(L(prefix.."error_max_per_player", localify.GetLocale( self:GetOwner() )), maxPerPlayer) ) break end
+		if ( maxPerPlayer >= 0 and stackerEntsSpawned >= maxPerPlayer ) then self:SendError( ("Stacker prop limit reached (%s)"):format(maxPerPlayer) ) break end
 		-- check if the player has exceeded the sbox_maxprops cvar
 		if ( not self:GetSWEP():CheckLimit( "props" ) )            then break end
 		-- check if external admin mods are blocking this entity
@@ -703,7 +695,7 @@ function TOOL:LeftClick( tr, isRightClick )
 
 
 		-- check if the stacked props would be spawned outside of the world
-		if ( stayInWorld and not util.IsInWorld( entPos ) ) then self:SendError( L(prefix.."error_not_in_world", localify.GetLocale( self:GetOwner() )) ) break end
+		if ( stayInWorld and not util.IsInWorld( entPos ) ) then self:SendError( "Stacked props must be spawned within the world" ) break end
 
 		-- create the new stacked entity
 		newEnt = ents.Create( "prop_physics" )
@@ -1319,9 +1311,9 @@ if ( CLIENT ) then
 
 		local ang = ent:GetAngles()
 
-		local front = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_front").." " or "", cvarAxisAng:GetBool() and "("..ang.x..")" or "" )
-		local right = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_right").." " or "", cvarAxisAng:GetBool() and "("..ang.y..")" or "" )
-		local upwrd = ("%s%s"):format( cvarAxisLbl:GetBool() and L(prefix.."hud_up").." "    or "", cvarAxisAng:GetBool() and "("..ang.z..")" or "" )
+		local front = ("%s%s"):format( cvarAxisLbl:GetBool() and "Front " or "", cvarAxisAng:GetBool() and "("..ang.x..")" or "" )
+		local right = ("%s%s"):format( cvarAxisLbl:GetBool() and "Right " or "", cvarAxisAng:GetBool() and "("..ang.y..")" or "" )
+		local upwrd = ("%s%s"):format( cvarAxisLbl:GetBool() and "Up "    or "", cvarAxisAng:GetBool() and "("..ang.z..")" or "" )
 
 		cam.Start2D()
 			draw.SimpleTextOutlined( front, mode.."_direction", fs.x, fs.y, RED,   0, 0, 1, BLACK )
@@ -1348,7 +1340,7 @@ if ( CLIENT ) then
 			MenuButton = 1,
 			Folder     = mode,
 			Options = {
-				[L(prefix.."combobox_default")] = {
+				["Default"] = {
 					[mode.."_mode"]        = tostring(improvedstacker.MODE_PROP),
 					[mode.."_direction"]   = tostring(improvedstacker.DIRECTION_UP),
 					[mode.."_count"]       = "1",
@@ -1406,72 +1398,56 @@ if ( CLIENT ) then
 		}
 
 		local relativeOptions = {
-			[L(prefix.."combobox_world")] = { [mode.."_mode"] = improvedstacker.MODE_WORLD },
-			[L(prefix.."combobox_prop")]  = { [mode.."_mode"] = improvedstacker.MODE_PROP  },
+			["World"] = { [mode.."_mode"] = improvedstacker.MODE_WORLD },
+			["Prop"]  = { [mode.."_mode"] = improvedstacker.MODE_PROP  },
 		}
 
-		local relative = { Label = L(prefix.."label_relative"), MenuButton = "0", Options = relativeOptions }
+		local relative = { Label = "Stack relative to: ", MenuButton = "0", Options = relativeOptions }
 
 		local directionOptions = {
-			["1 - "..L(prefix.."combobox_direction_front")] = { [mode.."_direction"] = improvedstacker.DIRECTION_FRONT },
-			["2 - "..L(prefix.."combobox_direction_back")]  = { [mode.."_direction"] = improvedstacker.DIRECTION_BACK  },
-			["3 - "..L(prefix.."combobox_direction_right")] = { [mode.."_direction"] = improvedstacker.DIRECTION_RIGHT },
-			["4 - "..L(prefix.."combobox_direction_left")]  = { [mode.."_direction"] = improvedstacker.DIRECTION_LEFT  },
-			["5 - "..L(prefix.."combobox_direction_up")]    = { [mode.."_direction"] = improvedstacker.DIRECTION_UP    },
-			["6 - "..L(prefix.."combobox_direction_down")]  = { [mode.."_direction"] = improvedstacker.DIRECTION_DOWN  },
+			["1 - Front"] = { [mode.."_direction"] = improvedstacker.DIRECTION_FRONT },
+			["2 - Back"]  = { [mode.."_direction"] = improvedstacker.DIRECTION_BACK  },
+			["3 - Right"] = { [mode.."_direction"] = improvedstacker.DIRECTION_RIGHT },
+			["4 - Left"]  = { [mode.."_direction"] = improvedstacker.DIRECTION_LEFT  },
+			["5 - Up"]    = { [mode.."_direction"] = improvedstacker.DIRECTION_UP    },
+			["6 - Down"]  = { [mode.."_direction"] = improvedstacker.DIRECTION_DOWN  },
 		}
 
-		local directions = { Label = L(prefix.."label_direction"), MenuButton = "0", Options = directionOptions }
+		local directions = { Label = "Stack direction: ", MenuButton = "0", Options = directionOptions }
 
-		-- populate the table of valid languages that clients can switch between
-		local languageOptions = {}
-
-		for code, tbl in pairs( localify.GetLocalizations() ) do
-			if ( not L(prefix.."language_"..code, code) ) then continue end
-
-			languageOptions[ L(prefix.."language_"..code, code) ] = { localify_language = code }
-		end
-
-		local languages = {
-			Label      = L(prefix.."label_language"),
-			MenuButton = 0,
-			Options    = languageOptions,
-		}
-
-		cpanel:AddControl( "ComboBox", languages )
-		cpanel:ControlHelp( "\n" .. L(prefix.."label_credits") )
-		cpanel:AddControl( "Label",    { Text = L(prefix.."label_presets") } )
+		cpanel:ControlHelp( "" )
+		cpanel:AddControl( "Label",    { Text = "Stacker Presets: " } )
 		cpanel:AddControl( "ComboBox", presets )
-		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_freeze"),    Command = mode.."_freeze" } )
-		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_weld"),      Command = mode.."_shouldweld" } )
-		cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_nocollide"), Command = mode.."_shouldnocollide" } )
+		cpanel:AddControl( "Checkbox", { Label = "Freeze stacked props",    Command = mode.."_freeze" } )
+		cpanel:AddControl( "Checkbox", { Label = "Weld stacked props",      Command = mode.."_shouldweld" } )
+		cpanel:AddControl( "Checkbox", { Label = "No-Collide stacked props with each other", Command = mode.."_shouldnocollide" } )
 		cpanel:AddControl( "ComboBox", relative )
 		cpanel:AddControl( "ComboBox", directions )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_count"), Min = 1, Max = cvarMaxPerStack:GetInt(), Command = mode.."_count", Description = "How many props to create in each stack" } )
-		cpanel:AddControl( "Button",   { Label = L(prefix.."label_reset_offsets"), Command = mode.."_reset_offsets" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_x"),     Type = "Float", Min = - cvarMaxOffX:GetInt(), Max = cvarMaxOffX:GetInt(), Value = 0, Command = mode.."_offsetx" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_y"),     Type = "Float", Min = - cvarMaxOffY:GetInt(), Max = cvarMaxOffY:GetInt(), Value = 0, Command = mode.."_offsety" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_z"),     Type = "Float", Min = - cvarMaxOffZ:GetInt(), Max = cvarMaxOffZ:GetInt(), Value = 0, Command = mode.."_offsetz" } )
-		cpanel:AddControl( "Button",   { Label = L(prefix.."label_reset_angles"),  Command = mode.."_reset_angles" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_pitch"), Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_pitch" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_yaw"),   Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_yaw" } )
-		cpanel:AddControl( "Slider",   { Label = L(prefix.."label_roll"),  Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_roll" } )
+		cpanel:AddControl( "Slider",   { Label = "Stack size", Min = 1, Max = cvarMaxPerStack:GetInt(), Command = mode.."_count", Description = "How many props to create in each stack" } )
+		cpanel:AddControl( "Button",   { Label = "Reset offsets", Command = mode.."_reset_offsets" } )
+		cpanel:AddControl( "Slider",   { Label = "X  (-back, +front)",     Type = "Float", Min = - cvarMaxOffX:GetInt(), Max = cvarMaxOffX:GetInt(), Value = 0, Command = mode.."_offsetx" } )
+		cpanel:AddControl( "Slider",   { Label = "Y  (-left, +right)",     Type = "Float", Min = - cvarMaxOffY:GetInt(), Max = cvarMaxOffY:GetInt(), Value = 0, Command = mode.."_offsety" } )
+		cpanel:AddControl( "Slider",   { Label = "Z  (-down, +up)",     Type = "Float", Min = - cvarMaxOffZ:GetInt(), Max = cvarMaxOffZ:GetInt(), Value = 0, Command = mode.."_offsetz" } )
+		cpanel:AddControl( "Button",   { Label = "Reset angles",  Command = mode.."_reset_angles" } )
+		cpanel:AddControl( "Slider",   { Label = "Pitch  (-down, +up)", Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_pitch" } )
+		cpanel:AddControl( "Slider",   { Label = "Yaw   (-left, +right)",   Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_yaw" } )
+		cpanel:AddControl( "Slider",   { Label = "Roll    (-left, +right)",  Type = "Float", Min = -MAX_ANGLE,  Max = MAX_ANGLE,  Value = 0, Command = mode.."_roll" } )
 
-		cpanel:AddControl( "Button",   { Label = L(prefix.."label_"..(showSettings and "hide" or "show").."_settings"),   Command = mode.."_show_settings" } )
+		cpanel:AddControl( "Button",   { Label = (showSettings and "Click to hide settings" or "Click to show settings"),   Command = mode.."_show_settings" } )
 
 		if ( showSettings ) then
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_use_shift_key"), Command = mode.."_use_shift_key", Description = "Toggles the ability to hold SHIFT and click the left and right mouse buttons to change stack size" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_relative"),      Command = mode.."_relative",      Description = "Stacks each prop relative to the prop right before it. This allows you to create curved stacks" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_material"),      Command = mode.."_material",      Description = "Applies the material of the original prop to all stacked props" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_color"),         Command = mode.."_color",         Description = "Applies the color of the original prop to all stacked props" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_physprop"),      Command = mode.."_physprop",      Description = "Applies the physical properties of the original prop to all stacked props" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_ghost"),         Command = mode.."_ghostall",      Description = "Creates every ghost prop in the stack instead of just the first ghost prop" } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_axis"),          Command = mode.."_draw_axis", } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_axis_labels"),   Command = mode.."_axis_labels", } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_axis_angles"),   Command = mode.."_axis_angles", } )
-			cpanel:AddControl( "Checkbox", { Label = L(prefix.."checkbox_halo"),          Command = mode.."_draw_halos", Description = "Gives halos to all of the props in to ghosted stack" } )
-			cpanel:AddControl( "Slider",   { Label = L(prefix.."label_opacity"), Type = "Integer", Min = 0, Max = 255, Command = mode.."_opacity" } )
-			cpanel:AddControl( "Color",    { Label = L(prefix.."checkbox_halo_color"), Red = mode.."_halo_r", Green = mode.."_halo_g", Blue = mode.."_halo_b", Alpha = mode.."_halo_a" } )
+			cpanel:AddControl( "Checkbox", { Label = "Change stack size with SHIFT + left/right-click", Command = mode.."_use_shift_key", Description = "Toggles the ability to hold SHIFT and click the left and right mouse buttons to change stack size" } )
+			cpanel:AddControl( "Checkbox", { Label = "Stack relative to new rotation",      Command = mode.."_relative",      Description = "Stacks each prop relative to the prop right before it. This allows you to create curved stacks" } )
+			cpanel:AddControl( "Checkbox", { Label = "Apply material",      Command = mode.."_material",      Description = "Applies the material of the original prop to all stacked props" } )
+			cpanel:AddControl( "Checkbox", { Label = "Apply color",         Command = mode.."_color",         Description = "Applies the color of the original prop to all stacked props" } )
+			cpanel:AddControl( "Checkbox", { Label = "Apply physical properties",      Command = mode.."_physprop",      Description = "Applies the physical properties of the original prop to all stacked props" } )
+			cpanel:AddControl( "Checkbox", { Label = "Ghost all props in the stack",         Command = mode.."_ghostall",      Description = "Creates every ghost prop in the stack instead of just the first ghost prop" } )
+			cpanel:AddControl( "Checkbox", { Label = "Draw XYZ axis",          Command = mode.."_draw_axis", } )
+			cpanel:AddControl( "Checkbox", { Label = "Draw XYZ axis labels",   Command = mode.."_axis_labels", } )
+			cpanel:AddControl( "Checkbox", { Label = "Draw XYZ axis angles",   Command = mode.."_axis_angles", } )
+			cpanel:AddControl( "Checkbox", { Label = "Add halos to ghosted props",          Command = mode.."_draw_halos", Description = "Gives halos to all of the props in to ghosted stack" } )
+			cpanel:AddControl( "Slider",   { Label = "Opacity", Type = "Integer", Min = 0, Max = 255, Command = mode.."_opacity" } )
+			cpanel:AddControl( "Color",    { Label = "Halo color", Red = mode.."_halo_r", Green = mode.."_halo_g", Blue = mode.."_halo_b", Alpha = mode.."_halo_a" } )
 		end
 	end
 
@@ -1483,14 +1459,6 @@ if ( CLIENT ) then
 		buildCPanel( cpanel )
 	end )
 
-	-- listen for changes to the localify language and reload the tool's menu to update the localizations
-	cvars.AddChangeCallback( "localify_language", function( name, old, new )
-		local cpanel = controlpanel.Get( mode )
-		if ( not IsValid( cpanel ) ) then return end
-		cpanel:ClearControls()
-		buildCPanel( cpanel )
-	end, "improvedstacker" )
-
 	TOOL.BuildCPanel = buildCPanel
 
 	--[[--------------------------------------------------------------------------
@@ -1501,7 +1469,7 @@ if ( CLIENT ) then
 	--	operators to quickly and easily save/change Stacker server settings.
 	--]]--
 	hook.Add( "PopulateToolMenu", mode.."AdminUtilities", function()
-		spawnmenu.AddToolMenuOption( "Utilities", "Admin", mode.."_utils", L(prefix.."name"), "", "", function( cpanel )
+		spawnmenu.AddToolMenuOption( "Utilities", "Admin", mode.."_utils", "Stacker - Improved", "", "", function( cpanel )
 
 			-- quick presets for default settings
 			local presets = {
@@ -1509,10 +1477,10 @@ if ( CLIENT ) then
 				menubutton = 1,
 				folder     = mode.."_admin",
 				options = {
-					[L(prefix.."combobox_default")]      = improvedstacker.SETTINGS_DEFAULT,
-					[L(prefix.."combobox_sandbox")]      = improvedstacker.SETTINGS_SANDBOX,
-					[L(prefix.."combobox_darkrp")]       = improvedstacker.SETTINGS_DARKRP,
-					[L(prefix.."combobox_singleplayer")] = improvedstacker.SETTINGS_SINGLEPLAYER,
+					["Default"]      = improvedstacker.SETTINGS_DEFAULT,
+					["Sandbox"]      = improvedstacker.SETTINGS_SANDBOX,
+					["DarkRP"]       = improvedstacker.SETTINGS_DARKRP,
+					["Singleplayer"] = improvedstacker.SETTINGS_SINGLEPLAYER,
 				},
 				cvars = {
 					{ CVar = mode.."_max_per_player",    CCmd = mode.."_set_max_per_player" },
@@ -1570,9 +1538,19 @@ if ( CLIENT ) then
 				end
 
 				local decimals = data.Decimals or 2
+				
+				-- Label text mapping
+				local labelMap = {
+					max_per_player = "Props per player",
+					max_per_stack = "Stack size",
+					delay = "Delay",
+					max_offsetx = "Maximum X offset",
+					max_offsety = "Maximum Y offset",
+					max_offsetz = "Maximum Z offset",
+				}
 
 				local slider = vgui.Create( "StackerDNumSlider", list )
-				slider:SetText( L(prefix.."label_"..data.String) )
+				slider:SetText( labelMap[data.String] or data.String )
 				slider.Label:SetFont( "DermaDefaultBold" )
 				slider:SetMinMax( data.Min, data.Max )
 				slider:SetDark( true )
@@ -1587,9 +1565,19 @@ if ( CLIENT ) then
 					RunConsoleCommand( cmd, value )
 				end
 
-				if ( L(prefix.."help_"..data.String) ) then
+				-- Help text mapping
+				local helpMap = {
+					max_per_player = "Maximum stacked props each player is limited to.",
+					max_per_stack = "Maximum props per stack (left-click).",
+					delay = "Delay (in seconds) between each Stacker use (left/right-click)",
+					max_offsetx = "Maximum distance between stacked props (X-axis).",
+					max_offsety = "Maximum distance between stacked props (Y-axis).",
+					max_offsetz = "Maximum distance between stacked props (Z-axis).",
+				}
+
+				if ( helpMap[data.String] ) then
 					local help = vgui.Create( "DLabel", list )
-					help:SetText( L(prefix.."help_"..data.String) )
+					help:SetText( helpMap[data.String] )
 					help:DockMargin( 10, 0, 5, 0 )
 					help:SetWrap( true )
 					help:SetDark( true )
@@ -1597,9 +1585,17 @@ if ( CLIENT ) then
 					help:SetFont( "DermaDefault" )
 				end
 
-				if ( L(prefix.."warning_"..data.String) ) then
+				-- Warning text mapping
+				local warningMap = {
+					max_per_player = "Primarily for Roleplay gamemodes. For Sandbox gamemodes, this should generally be unlimited (-1).",
+					max_offsetx = "Primarily for Roleplay gamemodes. Don't modify unless you know what you're doing.",
+					max_offsety = "Primarily for Roleplay gamemodes. Don't modify unless you know what you're doing.",
+					max_offsetz = "Primarily for Roleplay gamemodes. Don't modify unless you know what you're doing.",
+				}
+
+				if ( warningMap[data.String] ) then
 					local help = vgui.Create( "DLabel", list )
-					help:SetText( L(prefix.."warning_"..data.String) )
+					help:SetText( warningMap[data.String] )
 					help:DockMargin( 10, 0, 5, 0 )
 					help:SetWrap( true )
 					help:SetDark( true )
@@ -1641,8 +1637,17 @@ if ( CLIENT ) then
 					draw.RoundedBox( 0, 0, 0, w, h, fg )
 				end
 
+				-- Checkbox label mapping
+				local checkboxMap = {
+					freeze = "Freeze stacked props",
+					shouldweld = "Weld stacked props",
+					shouldnocollide = "No-Collide stacked props with each other",
+					nocollide_all = "No-Collide stacked props with EVERYTHING",
+					stayinworld = "Stay in world",
+				}
+
 				local cb = vgui.Create( "DCheckBoxLabel", list )
-				cb:SetText( L(prefix.."checkbox_"..data) )
+				cb:SetText( checkboxMap[data] or data )
 				cb:SetChecked( GetConVar( mode.."_force_"..data ):GetBool() )
 				cb.Label:SetFont( "DermaDefaultBold" )
 				cb:SizeToContents()
@@ -1659,9 +1664,18 @@ if ( CLIENT ) then
 					cb:SetChecked( tobool( new ) )
 				end, mode.."_"..data.."_utilities" )
 
-				if ( L(prefix.."help_"..data) ) then
+				-- Help text mapping
+				local helpMap = {
+					freeze = "Stacked props are frozen when spawned.",
+					shouldweld = "Stacked props are welded to each other when spawned.",
+					shouldnocollide = "Stacked props won't collide with other stacked props.",
+					nocollide_all = "Stacked props won't collide with anything except players, NPCs, vehicles, and the world.",
+					stayinworld = "Prevents stacked props from being created outside of the map.",
+				}
+
+				if ( helpMap[data] ) then
 					local help = vgui.Create( "DLabel", list )
-					help:SetText( L(prefix.."help_"..data) )
+					help:SetText( helpMap[data] )
 					help:DockMargin( 25, 5, 5, 0 )
 					help:SetWrap( true )
 					help:SetDark( true )
@@ -1669,9 +1683,17 @@ if ( CLIENT ) then
 					help:SetFont( "DermaDefault" )
 				end
 
-				if ( L(prefix.."warning_"..data) ) then
+				-- Warning text mapping
+				local warningMap = {
+					freeze = "For DarkRP.",
+					shouldweld = "For DarkRP.",
+					shouldnocollide = "For DarkRP.",
+					nocollide_all = "DO NOT CHANGE WHILE THE SERVER IS RUNNING. This uses the GM.ShouldCollide hook and is experimental. It works and is guaranteed to stop crashes from Stacker, but needs more testing.",
+				}
+
+				if ( warningMap[data] ) then
 					local help = vgui.Create( "DLabel", list )
-					help:SetText( L(prefix.."warning_"..data) )
+					help:SetText( warningMap[data] )
 					help:DockMargin( 25, 5, 5, 0 )
 					help:SetWrap( true )
 					help:SetDark( true )
