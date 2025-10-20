@@ -1543,8 +1543,8 @@ if ( CLIENT ) then
 				-- Checkbox label mapping
 				local checkboxMap = {
 					freeze = "Freeze stacked props",
-					shouldweld = "Weld stacked props",
-					shouldnocollide = "No-Collide stacked props with each other",
+					weld = "Weld stacked props",
+					nocollide = "No-Collide stacked props with each other",
 					nocollide_all = "No-Collide stacked props with EVERYTHING",
 					stayinworld = "Stay in world",
 				}
