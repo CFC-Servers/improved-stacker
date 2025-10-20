@@ -1551,7 +1551,6 @@ if ( CLIENT ) then
 
 				local cb = vgui.Create( "DCheckBoxLabel", list )
 				cb:SetText( checkboxMap[data] or data )
-				print( mode.."_force_"..data, GetConVar( mode.."_force_"..data ) )
 				cb:SetChecked( GetConVar( mode.."_force_"..data ):GetBool() )
 				cb.Label:SetFont( "DermaDefaultBold" )
 				cb:SizeToContents()
